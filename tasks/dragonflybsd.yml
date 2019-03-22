@@ -1,0 +1,14 @@
+---
+## (DragonFly BSD) ;
+- name: "Ensure OpenJDK {{ ojdk_version }} (bin) is {{ ojdk_state | capitalize }}"
+  pkgng:
+    name: "openjdk{% if ojdk_version not in ['', ' ', '7', 'default'] %}{{ ojdk_version }}{% endif %}"
+    state: "{{ ojdk_state }}"
+  when: "(ansible_distribution_version > '1.1') and (ojdk_version|int > 6)"
+- name: "Ensure OpenJDK {{ ojdk_version }} (port) is {{ ojdk_state | capitalize }}"
+  portinstall:
+    # bootstrap-openjdk$ojdk_version
+    name: "java/openjdk{{ ojdk_version }}"
+    state: "{{ ojdk_state }}"
+    use_packages: yes
+  when: "(ansible_distribution_version < '1.2') or (ojdk_version|int < 7)"

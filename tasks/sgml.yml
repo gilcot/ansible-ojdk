@@ -1,0 +1,8 @@
+---
+## (Source Mage GNU-Linux) ;
+- import_tasks: 'na.yml'
+- name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
+  sorcery:
+    spell: "openjdk-{{ ojdk_version }}"
+    state: "{{ ojdk_state }}"
+    update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"

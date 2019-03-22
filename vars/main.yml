@@ -1,0 +1,4 @@
+---
+ojdk_is_unavailable: "OpenJDK not build for this operating system. Compile it or install alternative vendor package."
+unsupported_os_type: "Unsupported Operating System, Sorry"
+unsupported_os_vers: "Unknown Packages Manager for {{ ansible_distribution_version }}"

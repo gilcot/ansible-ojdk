@@ -1,0 +1,77 @@
+---
+## (WinNT) ; 
+- name: "Check if Scoop is There"
+  #@ https://scoop.sh
+  win_command: "scoop help"
+  register: scoop
+  ignore_errors: yes
+- name: "Ensure via Scoop that OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
+  #@ https://github.com/lukesampson/scoop/wiki/Quick-Start
+  #@ https://github.com/lukesampson/scoop/wiki/Java
+  #@ https://github.com/se35710/scoop-java
+  win_command: "scoop {% if ojdk_state == 'present' %}install%{ elif ojdk_state == 'absent' %}uninstall{% elif ojdk_state == 'latest' %}update{% endif %} openjdk{{ ojdk_version }}"
+  when:
+    - "scoop.rc == 0"
+    - "ojdk_version in ['present','latest','absent']"
+- name: "Check if Jabba is There"
+  #@ https://github.com/shyiko/jabba#windows-10
+  win_command: "jabba ls-remote"
+  register: jabba
+  ignore_errors: yes
+  when:
+    - "scoop.rc != 0"
+- name: "Ensure via Jabba that OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
+  #@ https://github.com/shyiko/jabba#usage
+  # ToDo: link system
+  command: "jabba {% if ojdk_state == 'absent' %}un{% endif %}install openjdk@1.{{ ojdk_version }}-0"
+  when:
+    - "jabba.rc == 0"
+    - "ojdk_version in ['absent','present']"
+- name: "Check if Wapt is There"
+  #@ https://www.wapt.fr/en/doc/wapt-usage/command-line-interface/command-line-interface-special-usage.html#wapt-get-clean
+  win_command: "wapt-get clean"
+  register: wapt
+  ignore_errors: yes
+  when:
+    - "scoop.rc != 0"
+    - "jabba.rc != 0"
+- name: "Ensure via Wapt that OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
+  #@ https://wapt.tranquil.it/store/?search=jdk&sort=popular
+  #@ https://www.wapt.fr/en/doc/wapt-usage/command-line-interface-common-usage.html#wapt-get-clean
+  win_command: "wapt-get {% if ojdk_state == 'present' %}update & wapt-get install%{ elif ojdk_state == 'absent' %}remove{% endif %} tis-jdk{{ ojdk_version }}"
+  when:
+    - "wapt.rc == 0"
+    - "ojdk_version in ['absent','present']"
+- name: "Ensure {{ ojdk_repository | default('Local OpenJDK .msi' }} is {{ ojdk_state | capitalize }}"
+  #@ https://www.azul.com/downloads/zulu/zulu-windows/
+  #@ https://aws.amazon.com/correto
+  #! win_msi will be deprecated by Ansible 2.8 ; prefere win_package
+  win_msi:
+    path: "{{ ojdk_repository }}"
+    state: "{{ ojdk_state }}"
+    wait: yes
+  when:
+    - "scoop.rc != 0"
+    - "jabba.rc != 0"
+    - "wapt.rc != 0"
+    - "ojdk_repository is defined"
+    - "ojdk_repository is match('.*.msi$')"
+    - "ojdk_version in ['absent','present']"
+- name: "Check if Chocolatey is There"
+  win_command: "choco.exe --help"
+  register: choco
+  when:
+    - "scoop.rc != 0"
+    - "jabba.rc != 0"
+    - "wapt.rc != 0"
+    - "ojdk_repository is not defined"
+  ignore_errors: yes
+- name: "Ensure via Choco that OpenJDK {{ ojdk_version }} {{ ojdk_state | capitalize }}"
+  win_chocolatey:
+    #@ https://chocolatey.org/packages?q=tag%3Aopenjdk
+    name: "adoptopenjdk{{ ojdk_version }}"
+    state: "{{ ojdk_state }}"
+    #allow_empty_checksums: yes
+    #source: "{{ ojdk_repository | default('') }}"
+    validate_certs: no
+  when: "choco.rc == 0"

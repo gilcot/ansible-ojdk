@@ -1,0 +1,7 @@
+---
+## (ArchLinux) ; Antergos ; ArchBang ; BlackArch Linux ; Chakra Linux ; CTKArch ; KahelOS ; Manjaro Linux ; Parabola
+- name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
+  pacman:
+    name: "jdk{{ ojdk_version }}-openjdk"
+    state: "{{ ojdk_state }}"
+    update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"

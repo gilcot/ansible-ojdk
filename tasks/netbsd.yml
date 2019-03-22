@@ -1,0 +1,6 @@
+---
+## (NetBSD) ; FTOS ; NetBSD ; => QNX, Minix, etc.
+- name: "Ensure OpenJDK {{ ojdk_version }} (bin) is {{ ojdk_state | capitalize }}"
+  pkgin:
+    name: "openjdk{{ ojdk_version }}"
+    state: "{{ ojdk_state }}"

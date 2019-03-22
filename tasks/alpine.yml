@@ -1,0 +1,8 @@
+---
+## (Alpine Linux) ;
+- name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
+  apk:
+    name: "openjdk{{ ojdk_version }}"
+    state: "{{ ojdk_state }}"
+    update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
+

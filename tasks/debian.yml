@@ -1,0 +1,8 @@
+---
+## (Debian) ; AbulÉdu ; Adamantix (Trusted Debian) ; Antemium ; antiX Linux ; Aptosid ; Armbian ; BlackBox ; Cumulus Linux ; CrunchBang ; Daylight Linux ; Debian ; DemoLinux ; Demudi Linux ; Devuan ; Edubuntu ; Elive ; Emmabuntus ; Freeduc-cd ; gNewSense ; gnuLinEx ; Guadalinex ; HandyLinux ; Jolicloud ; Kaella ; Kali Linux ; Knoppix ; Kubuntu ; Linspire ; Lubuntu ; Mint Debian Edition ; Morphix ; MX Linux ; OpenMediaVault ; PingOO ; PrimTux ; Proxmox ; PureOS ; Raspbian ; Skolelinux ; SpartkyLinux ; SteamOS ; Subgraph ; Tails ; Trisquel ; Ubuntu ; Whonix ; Xandros ; Xubuntu ; YunoHost ; ...
+- name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
+  apt:
+    name: "openjdk-{{ ojdk_version }}-jdk"
+    state: "{{ ojdk_state }}"
+    update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
+    allow_unauthenticated: "{{ ojdk_gpg_uncheck }}"

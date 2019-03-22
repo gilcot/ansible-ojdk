@@ -1,0 +1,15 @@
+---
+## (FreeBSD) ; ClosedBSD ; DesktopBSD ; FreeBSD ; FreeNAS ; FreeSBIE ; GhostBSD ; HardenedBSD ; Junos OS ; m0n0wall ; OpenServer 10 ; OPNsense ; pfSense ; TrueOS ; TrueOS pico ; TrustedBSD ; XigmaNAS
+#@ https://www.digitalocean.com/community/tutorials/how-to-install-java-on-freebsd-10-1
+- name: "Ensure OpenJDK {{ ojdk_version }} (bin) is {{ ojdk_state | capitalize }}"
+  pkgng:
+    name: "openjdk{% if ojdk_version not in ['', ' ', '7', 'default'] %}{{ ojdk_version }}{% endif %}"
+    state: "{{ ojdk_state }}"
+  when: "(ansible_distribution_major_version|int > 8) and (ojdk_version|int > 6)"
+- name: "Ensure OpenJDK {{ ojdk_version }} (port) is {{ ojdk_state | capitalize }}"
+  portinstall:
+    # bootstrap-openjdk$ojdk_version
+    name: "java/openjdk{{ ojdk_version }}"
+    state: "{{ ojdk_state }}"
+    use_packages: yes
+  when: "(ansible_distribution_major_version|int < 9) or (ojdk_version|int < 7)"

@@ -1,0 +1,31 @@
+---
+sudo: required
+language: python
+python: "2.7"
+before_install:
+  # make sure everything is up to date
+  - sudo apt-get -qq update
+install:
+  # install Ansible
+  - pip install ansible
+  # add config to pick up roles path
+  - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
+#script:
+  # check the role playbook syntax
+  - ansible-playbook -i test/inventory tests/test.yml --syntax-check
+  # run the role playbook for first install
+  - "ansible-playbook -i test/inventory test/test.yml --connection=local --sudo"
+  # run the role playbook once to make sure it's idempotent
+  - >
+    ansible-playbook -i test/inventory tests/test.yml --connection=local --sudo
+    | grep -q 'changed=0.*failed=0'
+    && (echo 'Idempotence test: passed' && exit 0)
+    || (echo 'Idempotence test: failed' && exit 1)
+  # change java alternatives. (Debian-like)
+  - "sudo update-java-alternatives -s /usr/lib/jvm/java-1.8.0-openjdk-amd64"
+  # show java runtime version
+  - "java -version"
+  # show java compiler version
+  - "javac -version"
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/

@@ -1,0 +1,13 @@
+---
+## (Slackware) ; 4Bak ; Absolute Linux ; AliXe ; ARMedslack ; Arudius ; Austrumi ; BackTrack ; BearOps Desktop ; Bluewhite64 ; Blin ; Buffalo ; Burapha Gnu/Linux ; CEMF ; College ; Cytrun ; Darkstar ; DDbackup ; Definity ; DNALinux ; Drinou ; eLearnix ; eMoviX ; Evil Entity ; FreeLoader Linux ; GoblinX ; gNox ; Hardened Linux (Wendzel Linux) ; HostGIS ; iWhaX ; JoLinux ; KateOS ; Kinux ; KlaX ; LG3d live-cd ; Litrix Linux ; LiveCD Router ; MiniSlack ; MoviX ; MoviX² ; MutageniX ; NetSecL ; NetwosiX ; NimbleX ; OpenLAB ; PC Master ; Plamo ; Platypux ; Polux ; Privare ; Puppy Linux ; pQui ; Revanche ; RFS ; RIP (Recovery Is Possible) ; Root ; RUNT ; Salix ; Salix Live ; SauverOS ; SentiniX ; Slack/390 ; Slackintosh ; Slackermedia ; SlAmp ; Slackware ; Slackware64 ; Slamd64 ; SlaX ; Splack ; STuX ; Tereré ; Ultima ; VectorLinux ; Volta ; Wolvix ; ZenLive ; ZenServer ; Zenwalk ; 
+- name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
+  slackpkg:
+    name: "openjdk{{ ojdk_version }}-{{ ojdk_version }}"
+    state: "{{ ojdk_state }}"
+    update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
+  when: "ansible_distribution_version is version('12.2', '>=') "
+- name: "{{ unsupported_os_vers }}"
+  fail:
+    msg: "{{ ojdk_is_unavailable }}"
+  when: "ansible_distribution_version is version('12.2', '<') "
+

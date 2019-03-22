@@ -1,0 +1,30 @@
+---
+## (Not Available) ; 
+- name: "Check if SDKMan is There"
+  shell: "which sdk"
+  register: sdk
+  ignore_errors: yes
+- name: "Ensure via SDK that OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
+  #@ https://sdkman.io/sdks#java
+  command: "{{ sdk.stdout_lines[0] }}{% if ojdk_state == 'absent' %}un{% endif %}install java {{ ojdk_version }}.0.0-open"
+  when:
+    - "sdk.rc == 0"
+    - "ojdk_state in ['present','absent']"
+- name: "Check if Jabba is There"
+  shell: "which jabba"
+  register: jabba
+  ignore_errors: yes
+  when:
+    - "brew.rc != 0"
+    - "port.rc != 0"
+    - "sdk.rc != 0"
+- name: "Ensure via Jabba that OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
+  #@ https://github.com/shyiko/jabba#Usage
+  # ToDo: link system
+  command: "{{ jabba.stdout_lines[0] }}{% if ojdk_state == 'absent' %}un{% endif %}install openjdk@1.{{ ojdk_version }}-0"
+  when:
+    - "jabba.rc == 0"
+    - "ojdk_state in ['present','absent']"
+- name: "{{ unsupported_os_type }}"
+  fail:
+    msg: "{{ ojdk_is_unavailable }}"

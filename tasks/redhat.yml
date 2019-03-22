@@ -1,0 +1,11 @@
+---
+## (Red Hat Linux) ; Amazon (OVS) ; Aurox ; CentOS ; CloudLinux OS ; Fedora ; Fermi Linux ; Linux XP ; Open vSwitch (OVS) ; Oracle Linux (OEL) ; Parallels Server Bare metal (PSBM / Virtuozzo / Parallels Cloud Server) ; Qubes OS ; Red Hat Entreprise Linux (RHEL) ; Rocks Cluster Distribution ; Scientific Linux (SL) ; Scientific Linux CERN (SLC) ; Xen Server
+- name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
+  # backend: auto, yum (aka yum3/YUM3/yum-deprecated), yum4 (YUM4), dnf
+  yum:
+    name: "java-{% if ojdk_version|int < 9 %}1.{{ ojdk_version }}.0{% else %}{{ ojdk_version }}{% endif %}-openjdk-devel"
+    state: "{{ ojdk_state }}"
+    update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
+    validate_certs: "{% if ojdk_gpg_uncheck %}yes{% else %}no{% endif %}"
+    #enablerepo: "testing"
+    #disablerepo: "epel,ol7_latest"

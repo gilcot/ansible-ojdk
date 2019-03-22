@@ -1,0 +1,3 @@
+---
+## (SunOS) ; Dyson ; EON ZFS Storage ; illumos ; MartUX ; MilaX ; Jaris OS ; OpenIndiana ; OmniOS ; OpenSolaris ; OpenSXCE ; Oracle Solaris ; SchiliX ; SmartOS ; StormOS ; napp-it ; Nexenta OS ; NexentaStor ;
+- import_tasks: 'solaris.yml'

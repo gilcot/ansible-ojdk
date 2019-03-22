@@ -1,0 +1,12 @@
+---
+## (Void Linux) ;
+#@ https://github.com/void-linux/void-packages/tree/master/srcpkg/openjdk
+#@ https://github.com/void-linux/void-packages/issues/3237
+#@ https://wiki.voidlinux.org/Frequently_Asked_Quuestions#I_installed_.24PKGNAME_and_it.27s_not_in_my_.24PATH.21
+- name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
+  #= Ansible 2.3
+  xbps:
+    name: "openjdk-{{ ojdk_version }}"
+    state: "{{ ojdk_state }}"
+    update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
+
