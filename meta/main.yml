@@ -52,7 +52,7 @@ galaxy_info:
     - name: GenericLinux
       versions:
       - all
-    - name: HardenedLinux
+    - name: HardenedBSD
       versions:
       - all
     #- name: IOS

@@ -1,7 +1,7 @@
 ---
 ## (Not Available) ; 
 - name: "Check if SDKMan is There"
-  shell: "which sdk"
+  command: "which sdk"
   register: sdk
   ignore_errors: yes
 - name: "Ensure via SDK that OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
@@ -11,13 +11,9 @@
     - "sdk.rc == 0"
     - "ojdk_state in ['present','absent']"
 - name: "Check if Jabba is There"
-  shell: "which jabba"
+  command: "which jabba"
   register: jabba
   ignore_errors: yes
-  when:
-    - "brew.rc != 0"
-    - "port.rc != 0"
-    - "sdk.rc != 0"
 - name: "Ensure via Jabba that OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
   #@ https://github.com/shyiko/jabba#Usage
   # ToDo: link system
@@ -28,3 +24,6 @@
 - name: "{{ unsupported_os_type }}"
   fail:
     msg: "{{ ojdk_is_unavailable }}"
+  when:
+    - "sdk.rc != 0"
+    - "jabba.rc != 0"

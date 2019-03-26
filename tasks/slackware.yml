@@ -10,4 +10,3 @@
   fail:
     msg: "{{ ojdk_is_unavailable }}"
   when: "ansible_distribution_version is version('12.2', '<') "
-

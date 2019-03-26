@@ -1,5 +1,5 @@
 ---
 - hosts: localhost
-  remote_user: root
+  #remote_user: root
   roles:
-    - gilcot.ansible-ojdk
+    - { role: ../../ansible-ojdk, ojdk_version: 8, become: true }

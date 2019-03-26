@@ -2,7 +2,7 @@
 ## (OpenBSD) ;
 #@ https://www.reddit.com/r/openbsd/comments/3zjew8/problem_with_java/
 #@ http://openports.se/devel/jdk/1.8
-- name: "Ensure OpenJDK {{ ojdk_version }} (bin) is {{ ojdk_state | capitalize }}"
+- name: "Ensure OpenJDK {{ ojdk_version }} port is {{ ojdk_state | capitalize }}"
   openbsd_pkg:
     name: "jdk1.{{ ojdk_version }}"
     state: "{{ ojdk_state }}"
@@ -10,7 +10,10 @@
     #quick: yes
     #= Ansible 2.1
     build: yes
-    port_dir: "{{ ojdk_repository }}"
+    #= Ansible 2.1
+    ports_dir: "{{ ojdk_repository | default('/usr/ports') }}"
+    #= Ansible 2.3
+    #quick: "{% if not ojdk_gpg_uncheck %}yes{% else %}yes{% endif %}"
   when:
     - "ojdk_repository is defined"
     - "ojdk_repository|length"

@@ -6,7 +6,7 @@
 #@ https://apple.stackexchange.com/a/346196
 #@ https://sourceforge.net/p/fink/mailman/message/33092430/
 - name: "Check if HomBrew is There"
-  shell: "which brew"
+  command: "which brew"
   register: brew
   ignore_errors: yes
 - name: "Ensure via Brew that OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
@@ -14,17 +14,16 @@
     #@ https://github.com/AdoptOpenJDK/homebrew-openjdk
     name: "adoptopenjdk{{ ojdk_version }}"
     state: "{{ ojdk_state }}"
-    update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
-    #update_homebrew: "{% if ojdk_gpg_uncheck %}yes{% else %}no{% endif %}"
+    update_homebrew: "{% if ojdk_state in ['head','present','latest'] %}yes{% else %}no{% endif %}"
     path: "{{ brew.stdout_lines[0] }}"
-  when: "brew.rc == 0"
+  when:
+    - "brew.rc == 0"
+    - "ojdk_repository is not defined"
 - name: "Check if MacPorts is There"
   #@ https://apple.stackexchange.com/a/128794
-  #shell: "command -v port >/dev/null 2>&1"
-  shell: "command -v port"
+  command: "command -v port"
   register: port
   ignore_errors: yes
-  when: "brew.rc != 0"
 - name: "Ensure OpenJDK {{ ojdk_version }} Port is {{ ojdk_state | capitalize }}"
   macports:
     #@ https://www.macports.org/ports.php?by=category&substr=java&page=4&pagesize=50
@@ -33,35 +32,7 @@
     update_ports: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
     path: "{{ brew.stdout_lines[0] }}"
   when: "brew.rc == 0"
-- name: "Check if SDKMan is There"
-  shell: "which sdk"
-  register: sdk
-  ignore_errors: yes
-  when:
-    - "brew.rc != 0"
-    - "port.rc != 0"
-- name: "Ensure via SDK that OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
-  #@ https://sdkman.io/sdks#java
-  command: "{{ sdk.stdout_lines[0] }} {% if ojdk_state == 'absent' %}un{% endif %}install java {{ ojdk_version }}.0.0-open"
-  when:
-    - "sdk.rc == 0"
-    - "ojdk_state in ['present','absent']"
-- name: "Check if Jabba is There"
-  shell: "which jabba"
-  register: jabba
-  ignore_errors: yes
-  when:
-    - "brew.rc != 0"
-    - "port.rc != 0"
-    - "sdk.rc != 0"
-- name: "Ensure via Jabba that OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
-  #@ https://github.com/shyiko/jabba#Usage
-  # ToDo: link system
-  command: "{{ jabba.stdout_lines[0] }} {% if ojdk_state == 'absent' %}un{% endif %}install openjdk@1.{{ ojdk_version }}-0"
-  when:
-    - "jabba.rc == 0"
-    - "ojdk_state in ['present','absent']"
-- name: "Ensure {{ ojdk_repository | default('Local OpenJDK .dmg') }} is Present"
+- name: "Ensure Homebrew Repository is Present"
   #@ https://www.azul.com/downloads/zulu/zulu-mac/
   command: "{{ item }}"
   #@ https://serverfault.com/a/13632 (use installer ...or copy files)
@@ -72,25 +43,21 @@
     - "installer -pkg {{ ojdk_repository | basename | splitext }}.pkg -target '/'"
     - "hdiutil detach /Volumes/{{ ojdk_repository | basename | splitext }}"
   when:
-    - "jabba.rc != 0"
     - "brew.rc != 0"
     - "port.rc != 0"
-    - "sdk.rc != 0"
     - "ojdk_state == 'present'"
     - "ojdk_repository is defined"
     - "ojdk_repository is match('.*.dmg')"
-- name: "Ensure {{ ojdk_repository | default('Local OpenJDK .pkg') }} is Present"
+- name: "Ensure Alternative Repository is Present"
   #@ https://aws.amazon.com/correto
   command: "installer -pkg {{ ojdk_repository }} -target '/'"
   when:
-    - "jabba.rc != 0"
     - "brew.rc != 0"
     - "port.rc != 0"
-    - "sdk.rc != 0"
     - "ojdk_state == 'present'"
     - "ojdk_repository is defined"
     - "ojdk_repository is match('.*.pkg')"
-- name: "Ensure {{ ojdk_repository | default('Local OpenJDK .tar.gz') }} is Present"
+- name: "Ensure Alternative Image is Installed"
   #@ https://www.azul.com/downloads/zulu/zulu-mac/
   #@ https://aws.amazon.com/correto
   unarchive:
@@ -100,31 +67,23 @@
     - remote_src: yes
     #- validate_certs: no
   when:
-    - "jabba.rc != 0"
     - "brew.rc != 0"
     - "port.rc != 0"
-    - "sdk.rc != 0"
     - "ojdk_state == 'present'"
     - "ojdk_repository is defined"
     - "ojdk_repository is match('.*.tar.gz')"
-- name: "Ensure {{ ojdk_repository | default('Local OpenJDK') }} is Absent"
+- name: "Ensure Alternative Image is Removed"
   file:
     path: "/Library/Java/JavaVirtual/Machines/{{ ojdk_repository | basename | splitext }}"
     state: absent
   when:
-    - "jabba.rc != 0"
     - "brew.rc != 0"
     - "port.rc != 0"
-    - "sdk.rc != 0"
     - "ojdk_state == 'absent'"
     - "ojdk_repository is defined"
     - "ojdk_repository is match('.*.(tar.gz|dmg)')"
-- name: "{{ unsupported_os_vers }}"
-  fail:
-    msg: "{{ ojdk_is_unavailable }}"
+- import_tasks: 'na.yml'
   when:
-    - "jabba.rc != 0"
     - "brew.rc != 0"
     - "port.rc != 0"
-    - "sdk.rc != 0"
     - "ojdk_repository is not defined"

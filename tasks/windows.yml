@@ -13,13 +13,12 @@
   when:
     - "scoop.rc == 0"
     - "ojdk_version in ['present','latest','absent']"
+    - "ojdk_repository is not defined"
 - name: "Check if Jabba is There"
   #@ https://github.com/shyiko/jabba#windows-10
   win_command: "jabba ls-remote"
   register: jabba
   ignore_errors: yes
-  when:
-    - "scoop.rc != 0"
 - name: "Ensure via Jabba that OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
   #@ https://github.com/shyiko/jabba#usage
   # ToDo: link system
@@ -27,14 +26,12 @@
   when:
     - "jabba.rc == 0"
     - "ojdk_version in ['absent','present']"
+    - "ojdk_repository is not defined"
 - name: "Check if Wapt is There"
   #@ https://www.wapt.fr/en/doc/wapt-usage/command-line-interface/command-line-interface-special-usage.html#wapt-get-clean
   win_command: "wapt-get clean"
   register: wapt
   ignore_errors: yes
-  when:
-    - "scoop.rc != 0"
-    - "jabba.rc != 0"
 - name: "Ensure via Wapt that OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
   #@ https://wapt.tranquil.it/store/?search=jdk&sort=popular
   #@ https://www.wapt.fr/en/doc/wapt-usage/command-line-interface-common-usage.html#wapt-get-clean
@@ -42,7 +39,8 @@
   when:
     - "wapt.rc == 0"
     - "ojdk_version in ['absent','present']"
-- name: "Ensure {{ ojdk_repository | default('Local OpenJDK .msi' }} is {{ ojdk_state | capitalize }}"
+    - "ojdk_repository is not defined"
+- name: "Ensure that Local Archive is {{ ojdk_state | capitalize }}"
   #@ https://www.azul.com/downloads/zulu/zulu-windows/
   #@ https://aws.amazon.com/correto
   #! win_msi will be deprecated by Ansible 2.8 ; prefere win_package
@@ -55,23 +53,29 @@
     - "jabba.rc != 0"
     - "wapt.rc != 0"
     - "ojdk_repository is defined"
-    - "ojdk_repository is match('.*.msi$')"
+    - "ojdk_repository is match('.*.msi')"
     - "ojdk_version in ['absent','present']"
-- name: "Check if Chocolatey is There"
-  win_command: "choco.exe --help"
-  register: choco
+  warn: no
+# no need to check for "choco.exe" before: this module will install it when not found
+- name: "Ensure Chocolatey is installe and use internal repository as source"
+  win_chocolatey:
+    name: "chocolatey"
+    source: "{{ ojdk_repository }}"
   when:
     - "scoop.rc != 0"
     - "jabba.rc != 0"
     - "wapt.rc != 0"
-    - "ojdk_repository is not defined"
-  ignore_errors: yes
+    - "ojdk_repository is not match('.*.msi')"
 - name: "Ensure via Choco that OpenJDK {{ ojdk_version }} {{ ojdk_state | capitalize }}"
   win_chocolatey:
     #@ https://chocolatey.org/packages?q=tag%3Aopenjdk
     name: "adoptopenjdk{{ ojdk_version }}"
     state: "{{ ojdk_state }}"
     #allow_empty_checksums: yes
-    #source: "{{ ojdk_repository | default('') }}"
-    validate_certs: no
-  when: "choco.rc == 0"
+    #= Ansible 2.7
+    #validate_certs: "{% if not ojdk_gpg_uncheck %}yes{% else %}yes{% endif %}"
+  when:
+    - "scoop.rc != 0"
+    - "jabba.rc != 0"
+    - "wapt.rc != 0"
+    - "{ojdk_repository is not defined) or {ojdk_repository is not match('.*.msi'))"

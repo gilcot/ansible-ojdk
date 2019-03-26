@@ -9,15 +9,15 @@ install:
   # install Ansible
   - pip install ansible
   # add config to pick up roles path
-  - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
-#script:
+  #- "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
+script:
   # check the role playbook syntax
-  - ansible-playbook -i test/inventory tests/test.yml --syntax-check
-  # run the role playbook for first install
-  - "ansible-playbook -i test/inventory test/test.yml --connection=local --sudo"
-  # run the role playbook once to make sure it's idempotent
+  - ansible-playbook -i tests/inventory tests/test.yml --syntax-check
+  # install the package a first time
+  - "ansible-playbook -i tests/inventory tests/test.yml -c local -b"
+  # Retry to make sure it's idempotent
   - >
-    ansible-playbook -i test/inventory tests/test.yml --connection=local --sudo
+    ansible-playbook -i tests/inventory tests/test.yml -c local -b
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: passed' && exit 0)
     || (echo 'Idempotence test: failed' && exit 1)
@@ -27,5 +27,9 @@ install:
   - "java -version"
   # show java compiler version
   - "javac -version"
+  # Now uninstall the package once
+  - "ansible-playbook -i tests/inventory tests/test.yml -c local -e 'ojdk_state=absent' -b"
+  # More fun with Trusty (the default GCE container)
+  - "ansible-playbook -i tests/inventory tests/test.yml -c local -e 'ojdk_state=absent' -e 'ojdk_repository=ppa:openjdk/ppa' -e 'ojdk_version=6' -b"
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
