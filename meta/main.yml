@@ -1,111 +1,126 @@
+---
 galaxy_info:
   role_name: ojdk
   author: Gildas Cotomale
   description: Ansible role to manage OpenJDK package
   company: Gildas Cotomale
-  #issue_tracker_url: https://github.com/gilcot/ansible-ojdk/issues/
+  issue_tracker_url: https://github.com/gilcot/ansible-ojdk/issues/
   license: GPLv3
-  min_ansible_version: 2.0.0
-  #min_ansible_container_version: 0.9.2
-  #github_branch: master
+
+  # * tasks parameters
+  # * module.parameter
+  #   2.1 openbsd_pkg.build
+  #   2.1 openbsd_pkg.ports_dir
+  #   2.1 pkgutil.update_catalog
+  #   2.3 apt_repository.codename
+  #   2.3 openbsd_pkg.quick
+  #   2.3 xbps.
+  #   2.3 yum_repository.gpgcheck
+  #   2.7 win_chocolatey.validate_certs
+  #   2.8 installp.
+  # * lookup and filters
+  min_ansible_version: 2.3.0
+
+  # min_ansible_container_version: 0.9.2
+  github_branch: master
 
   platforms:
     - name: Alpine
       versions:
-      - all
-    #- name: Amazon
-    #  versions:
-    #  - all
+        - all
+    - name: Amazon
+      versions:
+        - all
     - name: ArchLinux
       versions:
-      - all
-    #- name: Cumulus
-    #  versions:
-    #  - all
+        - all
+    - name: Cumulus
+      versions:
+        - all
     - name: Debian
       versions:
-      - all
-    #- name: Dellos
-    #  versions:
-    #  - all
+        - all
+    # - name: Dellos
+    #   versions:
+    #     - all
     - name: Devuan
       versions:
-      - all
+        - all
     - name: DragonFlyBSD
       versions:
-      - all
+        - all
     - name: EL
       versions:
-      - all
-    #- name: eos
-    #  versions:
-    #  - all
+        - all
+    # - name: eos
+    #   versions:
+    #     - all
     - name: Fedora
       versions:
-      - all
+        - all
     - name: FreeBSD
       versions:
-      - all
+        - all
     - name: GenericBSD
       versions:
-      - all
+        - all
     - name: GenericLinux
       versions:
-      - all
+        - all
     - name: HardenedBSD
       versions:
-      - all
-    #- name: IOS
-    #  versions:
-    #  - all
-    #- name: macOS
-    #  versions:
-    #  - all
+        - all
+    # - name: IOS
+    #   versions:
+    #     - all
+    # - name: macOS
+    #   versions:
+    #     - all
     - name: MacOSX
       versions:
-      - all
-    #- name: NXOS
-    #  versions:
-    #  - all
+        - all
+    # - name: NXOS
+    #   versions:
+    #     - all
     - name: OpenBSD
       versions:
-      - all
+        - all
     - name: opensuse
       versions:
-      - all
-    #- name: PAN-OS
-    #  versions:
-    #  - all
+        - all
+    # - name: PAN-OS
+    #   versions:
+    #     - all
     - name: SLES
       versions:
-      - all
-    #- name: SmartOS
-    #  versions:
-    #  - all
-    #- name: Solaris
-    #  versions:
-    #  - all
-    #- name: Synology
-    #  versions:
-    #  - all
-    #- name: TMOS
-    #  versions:
-    #  - all
+        - all
+    - name: SmartOS
+      versions:
+        - all
+    - name: Solaris
+      versions:
+        - all
+    # - name: Synology
+    #   versions:
+    #     - all
+    # - name: TMOS
+    #   versions:
+    #     - all
     - name: Ubuntu
       versions:
-      - all
-    #- name: vCenter
-    #  versions:
-    #  - all
+        - all
+    # - name: vCenter
+    #   versions:
+    #     - all
     - name: Void Linux
       versions:
-      - all
-    #- name: vSphere
-    #  versions:
-    #  - all
+        - all
+    # - name: vSphere
+    #   versions:
+    #     - all
     - name: Windows
       versions:
-      - all
+        - all
   galaxy_tags:
     - openjdk
     - openjre

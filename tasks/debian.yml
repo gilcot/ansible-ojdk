@@ -2,17 +2,17 @@
 ## (Debian) ; AbulÉdu ; Adamantix (Trusted Debian) ; Antemium ; antiX Linux ; Aptosid ; Armbian ; BlackBox ; Cumulus Linux ; CrunchBang ; Daylight Linux ; Debian ; DemoLinux ; Demudi Linux ; Devuan ; Edubuntu ; Elive ; Emmabuntus ; Freeduc-cd ; gNewSense ; gnuLinEx ; Guadalinex ; HandyLinux ; Jolicloud ; Kaella ; Kali Linux ; Knoppix ; Kubuntu ; Linspire ; Lubuntu ; Mint Debian Edition ; Morphix ; MX Linux ; OpenMediaVault ; PingOO ; PrimTux ; Proxmox ; PureOS ; Raspbian ; Skolelinux ; SpartkyLinux ; SteamOS ; Subgraph ; Tails ; Trisquel ; Ubuntu ; Whonix ; Xandros ; Xubuntu ; YunoHost ; ...
 - name: "Ensure Alternative Repository is Present"
   apt_repository:
-    #filename: "openjdk{{ ojdk_version }}"
+    # filename: "openjdk{{ ojdk_version }}"
     repo: "{{ ojdk_repository }}"
-    #update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
-    #state: "{{ ojdk_state }}"
-    #= Ansible 2.3
-    #codename: "{{ ansible_distribution_release | lower }}"
-    validate_certs: "{% if ojdk_gpg_uncheck %}no{% else %}yes{% endif %}"
+    update_cache: "{{ 'yes' if ojdk_state in ['present','latest'] else 'no' }}"
+    state: present
+    # state: "{{ ojdk_state }}"
+    codename: "{{ ansible_distribution_release | lower }}"
+    validate_certs: "{{ 'no' if ojdk_gpg_uncheck else 'yes' }}"
   when: "ojdk_repository is defined"
 - name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
   apt:
     name: "openjdk-{{ ojdk_version }}-jdk"
     state: "{{ ojdk_state }}"
-    update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
+    update_cache: "{{ 'yes' if ojdk_state in ['present','latest'] else 'no' }}"
     allow_unauthenticated: "{{ ojdk_gpg_uncheck }}"

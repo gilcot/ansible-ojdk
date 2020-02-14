@@ -1,42 +1,42 @@
 ---
 ## (Darwin) ; GNU-Darwin ; Mac OS X (OS X / macOS) ; OpenDarwin ; PureDarwin ;
 # by default, Darwin is NEXTSTEP console family ; macOS adds Quartz (windowing system) and Aqua (interface) ; PureDarwin XMas, successor of OpenDarwin (where born Fink), adds X11 ; etc.
-#@ https://stackoverflow.com/q/1577014
-#@ https://stackoverflow.com/a/52524114
-#@ https://apple.stackexchange.com/a/346196
-#@ https://sourceforge.net/p/fink/mailman/message/33092430/
+# @ https://stackoverflow.com/q/1577014
+# @ https://stackoverflow.com/a/52524114
+# @ https://apple.stackexchange.com/a/346196
+# @ https://sourceforge.net/p/fink/mailman/message/33092430/
 - name: "Check if HomBrew is There"
   command: "which brew"
   register: brew
   ignore_errors: yes
 - name: "Ensure via Brew that OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
   homebrew:
-    #@ https://github.com/AdoptOpenJDK/homebrew-openjdk
+    # @ https://github.com/AdoptOpenJDK/homebrew-openjdk
     name: "adoptopenjdk{{ ojdk_version }}"
     state: "{{ ojdk_state }}"
-    update_homebrew: "{% if ojdk_state in ['head','present','latest'] %}yes{% else %}no{% endif %}"
+    update_homebrew: "{{ 'yes' if ojdk_state in ['head','present','latest'] else 'no' }}"
     path: "{{ brew.stdout_lines[0] }}"
   when:
     - "brew.rc == 0"
     - "ojdk_repository is not defined"
 - name: "Check if MacPorts is There"
-  #@ https://apple.stackexchange.com/a/128794
+  # @ https://apple.stackexchange.com/a/128794
   command: "command -v port"
   register: port
   ignore_errors: yes
 - name: "Ensure OpenJDK {{ ojdk_version }} Port is {{ ojdk_state | capitalize }}"
   macports:
-    #@ https://www.macports.org/ports.php?by=category&substr=java&page=4&pagesize=50
+    # @ https://www.macports.org/ports.php?by=category&substr=java&page=4&pagesize=50
     name: "openjdk{{ ojdk_version }}"
     state: "{{ ojdk_state }}"
-    update_ports: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
+    update_ports: "{{ 'yes' if ojdk_state in ['present','latest'] else 'no' }}"
     path: "{{ brew.stdout_lines[0] }}"
-  when: "brew.rc == 0"
-- name: "Ensure Homebrew Repository is Present"
-  #@ https://www.azul.com/downloads/zulu/zulu-mac/
+  when: "port.rc == 0"
+- name: "Ensure OpenJDK Package is Installed"
+  # @ https://www.azul.com/downloads/zulu/zulu-mac/
   command: "{{ item }}"
-  #@ https://serverfault.com/a/13632 (use installer ...or copy files)
-  #@ https://github.com/sandstorm/macosx-with-ansible/blob/master/tasks/dmg-install.yml
+  # @ https://serverfault.com/a/13632 (use installer ...or copy files)
+  # @ https://github.com/sandstorm/macosx-with-ansible/blob/master/tasks/dmg-install.yml
   with_items:
     - "hdiutil attach {{ ojdk_repository }} -nobrowse"
     - "cd /Volumes/{{ ojdk_repository | basename | splitext }}"
@@ -47,31 +47,31 @@
     - "port.rc != 0"
     - "ojdk_state == 'present'"
     - "ojdk_repository is defined"
-    - "ojdk_repository is match('.*.dmg')"
+    - "ojdk_repository is match('.+\\.dmg')"
 - name: "Ensure Alternative Repository is Present"
-  #@ https://aws.amazon.com/correto
+  # @ https://aws.amazon.com/correto
   command: "installer -pkg {{ ojdk_repository }} -target '/'"
   when:
     - "brew.rc != 0"
     - "port.rc != 0"
     - "ojdk_state == 'present'"
     - "ojdk_repository is defined"
-    - "ojdk_repository is match('.*.pkg')"
+    - "ojdk_repository is match('.+\\.pkg')"
 - name: "Ensure Alternative Image is Installed"
-  #@ https://www.azul.com/downloads/zulu/zulu-mac/
-  #@ https://aws.amazon.com/correto
+  # @ https://www.azul.com/downloads/zulu/zulu-mac/
+  # @ https://aws.amazon.com/correto
   unarchive:
-    #@ https://solarianprogrammer.com/2018/09/28/installing-openjdk-macos/
-    - src: "{{ ojdk_repository }}"
-    - dest: "/Library/Java/JavaVirtual/Machines/"
-    - remote_src: yes
-    #- validate_certs: no
+    # @ https://solarianprogrammer.com/2018/09/28/installing-openjdk-macos/
+    src: "{{ ojdk_repository }}"
+    dest: "/Library/Java/JavaVirtual/Machines/"
+    remote_src: yes
+    validate_certs: "{{ 'no' if not ojdk_gpg_uncheck else 'yes' }}"
   when:
     - "brew.rc != 0"
     - "port.rc != 0"
     - "ojdk_state == 'present'"
     - "ojdk_repository is defined"
-    - "ojdk_repository is match('.*.tar.gz')"
+    - "ojdk_repository is match('.+\\.tar\\.gz')"
 - name: "Ensure Alternative Image is Removed"
   file:
     path: "/Library/Java/JavaVirtual/Machines/{{ ojdk_repository | basename | splitext }}"
@@ -81,7 +81,7 @@
     - "port.rc != 0"
     - "ojdk_state == 'absent'"
     - "ojdk_repository is defined"
-    - "ojdk_repository is match('.*.(tar.gz|dmg)')"
+    - "ojdk_repository is match('.+\\.(tar\\.gz|dmg)')"
 - import_tasks: 'na.yml'
   when:
     - "brew.rc != 0"

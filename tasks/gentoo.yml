@@ -1,12 +1,12 @@
 ---
 ## (Gentoo) ; Bitdefender Rescue CD ; Calculate Linux ; Funtoo ; Gentoo ; Gentoo/FreeBSD ; Hardened Gentoo ; Kororaa ; PapugLinux ; Pentoo ; Sabayon Linux ; SystemRescueCd ; Tin Hat Linux ; Toorox ; Ututo ; VidaLinux ;
-#@ https://gpo.zugaina.org/dev-java/openjdk-bin.htm https://adoptopenjdk.net
-#@ https://packages.gentoo.org/packages/dev-java/openjdk/
-#@ https://packages.calculate-linux.org/packages/dev-java/openjdk
+# @ https://gpo.zugaina.org/dev-java/openjdk-bin.htm https://adoptopenjdk.net
+# @ https://packages.gentoo.org/packages/dev-java/openjdk/
+# @ https://packages.calculate-linux.org/packages/dev-java/openjdk
 - name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
   portage:
     package: "openjdk-bin-{{ ojdk_version }}"
-    #package: "dev-java/openjdk/openjdk-{{ ojdk_version }}"
+    # package: "dev-java/openjdk/openjdk-{{ ojdk_version }}"
     state: "{{ ojdk_state }}"
-    sync: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
+    sync: "{{ 'yes' if ojdk_state in ['present','latest'] else 'no' }}"
     getbinpkg: yes

@@ -6,18 +6,17 @@
     name: "openjdk{{ ojdk_version }}"
     file: "openjdk"
     baseurl: "{{ ojdk_repository }}"
-    #state: "{{ ojdk_state }}"
-    #enabled: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
-    #= Ansible 2.3
-    gpgcheck: "{% if ojdk_gpg_uncheck %}no{% else %}yes{% endif %}"
-    ssl_check_cert_permissions: "{% if ojdk_gpg_uncheck %}no{% else %}yes{% endif %}"
+    state: "{{ ojdk_state }}"
+    enabled: yes
+    # enabled: "{{ 'yes' if ojdk_state in ['present','latest'] else 'no' }}"
+    gpgcheck: "{{ 'no' if ojdk_gpg_uncheck else 'yes' }}"
+    ssl_check_cert_permissions: "{{ 'no' if ojdk_gpg_uncheck else 'yes' }}"
   when: "ojdk_repository is defined"
 - name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
   # backend: auto, yum (aka yum3/YUM3/yum-deprecated), yum4 (YUM4), dnf
   yum:
-    name: "java-{% if ojdk_version|int < 9 %}1.{{ ojdk_version }}.0{% else %}{{ ojdk_version }}{% endif %}-openjdk-devel"
+    name: "java-{{ '1.' if ojdk_version|int < 9 }}{{ ojdk_version }}{{ '.0'if ojdk_version|int < 9 }}-openjdk-devel"
     state: "{{ ojdk_state }}"
-    update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
-    validate_certs: "{% if ojdk_gpg_uncheck %}yes{% else %}no{% endif %}"
-    #enablerepo: "testing"
-    #disablerepo: "epel,ol7_latest"
+    update_cache: "{{ 'yes' if ojdk_state in ['present','latest'] else 'no' }}"
+    validate_certs: "{{ 'yes' if ojdk_gpg_uncheck else 'no' }}"
+    # enablerepo: "ojdk_repository"

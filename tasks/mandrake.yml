@@ -2,6 +2,6 @@
 ## (Mandriva (Mandrake)) ;  AbulÉdu ; Annvix ; APODIO ; Caixa Mágica ; Castle Linux ; EduLinux ; édutice ; Mageia ; MCNLive ; OpenMandriva Lx ; PCLinux OS ; ROSA linux ; Turkix ; Unity Linux
 - name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
   urpmi:
-    name: "java-{% if ojdk_version|int < 9 %}1.{{ ojdk_version }}.0{% else %}{{ ojdk_version }}{% endif %}-openjdk-devel"
+    name: "java-{{ '1.' if ojdk_version|int < 9 }}{{ ojdk_version }}{{ '.0' if ojdk_version|int < 9 }}-openjdk-devel"
     state: "{{ ojdk_state }}"
-    update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
+    update_cache: "{{ 'yes' if ojdk_state in ['present','latest'] else 'no' }}"

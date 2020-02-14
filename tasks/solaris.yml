@@ -14,20 +14,19 @@
     name: "jdk-{{ ojdk_version }}"
     state: "{{ ojdk_state }}"
     site: "{{ ojdk_repository }}"
-    #= Ansible 2.1
-    update_catalog: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
+    update_catalog: "{{ 'yes' if ojdk_state in ['present','latest'] else 'no' }}"
   when:
     - "ansible_distribution_major_version|int > 10"
     - "ojdk_repository is defined"
     - "ojdk_repository|length"
-#@ https://marc.info/?l=openbsd-ports&m=120959254931322
+# @ https://marc.info/?l=openbsd-ports&m=120959254931322
 - import_tasks: 'na.yml'
   when: "(ojdk_repository is not defined) or (not ojdk_repository|length)"
 - name: "Ensure OpenJDK {{ ojdk_version }} IPS package is {{ ojdk_state | capitalize }}"
   pkg5:
-    # https://bugs.openjdk.java.net/browse/JDK-8153043
-    # https://bugs.openjdk.java.net/browse/JDK-8152786
-    # https://bugs.openjdk.java.net/browse/JDK-8216065
+    # @ https://bugs.openjdk.java.net/browse/JDK-8153043
+    # @ https://bugs.openjdk.java.net/browse/JDK-8152786
+    # @ https://bugs.openjdk.java.net/browse/JDK-8216065
     name: "developer/java/jdk-{{ ojdk_version }}"
     state: "{{ ojdk_state }}"
     accept_licenses: yes

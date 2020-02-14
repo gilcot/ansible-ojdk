@@ -2,7 +2,7 @@
 ## (SuSE Linux Profesional (SuSE)) ; OpenSuSE ; SuSE Linux Entreprise Desktop (SLED) ; SuSE Linux Entreprise Server (SLES) ;
 - name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
   zypper:
-    name: "java-{% if ojdk_version|int < 9 %}1_{{ ojdk_version }}_0{% else %}{{ ojdk_version }}{% endif %}-openjdk-devel"
+    name: "java-{{ '1_' if ojdk_version|int < 9 }}{{ ojdk_version }}{{ '_0' if ojdk_version|int < 9 }}-openjdk-devel"
     state: "{{ ojdk_state }}"
-    update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
+    update_cache: "{% 'yes' if ojdk_state in ['present','latest'] else 'no' }}"
     disable_gpg_check: "{{ ojdk_gpg_uncheck }}"

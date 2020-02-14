@@ -1,14 +1,11 @@
 ---
-exclude_paths:
-  - tasks/aix.yml
-  - tasks/darwin.yml
 parseable: true
 quiet: true
 skip_list:
   # [E105] Deprecated module ...
-  - '105'
-  # [E204] Lines should be no longer than 160 chars 
-  - '204'
+  #- '105'
+  # [E204] Lines should be no longer than 160 chars
+  #- '204'
   # [E301] Commands should not change things if nothing needs doing
   - '301'
 use_default_rules: true

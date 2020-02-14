@@ -1,8 +1,8 @@
 ---
 ## (HP-UX) ;
-#@ https://knowledgebase.progress.com/articles/Article/P27223
-#@ https://h20392.www2.hpe.com/portal/swdepot/displayProductInfo.do?productNumber=HPUXJDKJRE80
-#@ https://community.hpe.com/t5/Languages-and-Scripting/Java-10-support-for-HPUX/td-p/7011422
+# @ https://knowledgebase.progress.com/articles/Article/P27223
+# @ https://h20392.www2.hpe.com/portal/swdepot/displayProductInfo.do?productNumber=HPUXJDKJRE80
+# @ https://community.hpe.com/t5/Languages-and-Scripting/Java-10-support-for-HPUX/td-p/7011422
 - name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
   swdepot:
     name: "openjdk{{ ojdk_version }}"

@@ -2,4 +2,4 @@
 ojdk_version: 8
 ojdk_state: 'present'
 ojdk_gpg_uncheck: no
-#ojdk_repository: ''
+# ojdk_repository: ''

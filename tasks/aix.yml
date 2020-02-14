@@ -1,13 +1,12 @@
 ---
 ## (IBM AIX/VIOS) ; AIX ; APV (Advanced PowerVM) VIOS ;
-#@ https://developer.ibm.com/javasdk/2018/04/26/java-standard-edition-ibm-support-statement/
-#@ https://openjdk.java.net/projects/ppc-aix-port/
-#@ http://mail.openjdk.java.net/pipermail/ppc-aix-port-dev/2015-December/002329.html
-#@ htps://sarungpandan.wordpress.com/2016/08/04/install-java-8-on-aix/
-#@ http://www-01.ibm.com/support/docview.wss?uid=isg3T1022644
-#@ http://www-01.ibm.com/support/docview.wss?uid=isg3T1022693
+# @ https://developer.ibm.com/javasdk/2018/04/26/java-standard-edition-ibm-support-statement/
+# @ https://openjdk.java.net/projects/ppc-aix-port/
+# @ http://mail.openjdk.java.net/pipermail/ppc-aix-port-dev/2015-December/002329.html
+# @ htps://sarungpandan.wordpress.com/2016/08/04/install-java-8-on-aix/
+# @ http://www-01.ibm.com/support/docview.wss?uid=isg3T1022644
+# @ http://www-01.ibm.com/support/docview.wss?uid=isg3T1022693
 - name: "Ensure OpenJDK {{ ojdk_version }} is {{ ojdk_state | capitalize }}"
-  #= Ansible 2.8
   installp:
     name: "openjdk{{ ojdk_version }}"
     state: "{{ ojdk_state }}"
@@ -15,6 +14,8 @@
     package_licenses: yes
   when:
     - "ojdk_repository is defined"
-    - "ojdk_repository|length"
+    - "ojdk_repository|length > 0"
 - import_tasks: 'na.yml'
-  when: "(ojdk_repository is not defined) or (not ojdk_repository|length)"
+  when: >
+    (ojdk_repository is not defined) or
+    (not ojdk_repository|length > 0)

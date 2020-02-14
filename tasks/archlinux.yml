@@ -4,4 +4,4 @@
   pacman:
     name: "jdk{{ ojdk_version }}-openjdk"
     state: "{{ ojdk_state }}"
-    update_cache: "{% if ojdk_state in ['present','latest'] %}yes{% else %}no{% endif %}"
+    update_cache: "{{ 'yes' if ojdk_state in ['present','latest'] else 'no' }}"

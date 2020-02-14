@@ -1,6 +1,6 @@
 # Open Java Developmet Kit
 
-This role is to manage Open Java Development Kit (OpenJDK) on a Linux box.
+This role is to manage Open Java Development Kit (OpenJDK) in most OS.
 
 [OpenJDK](https://openjdk.java.net) is a free and open-source
 [reference implementation](https://web.archive.org/web/201603010102422/https://blogs.oracle.com/henrik/entry/moving_to_openjdk_as_the)
@@ -19,7 +19,7 @@ As it's a reference, it provides expected common denominator (other
 implementations may add classes or not only J2SE...) So, they are some minor
 [differences with Oracle JDK](https://javapapers.com/java/oracle-jdk-vs-openjdk-and-java-jdk-development-process/)
 and also in the
-[releas model](https://www.oracle.com/java/java2-screencasts.html?bcid=5582439790001&playerType=single-social&size=events)
+[release model](https://www.oracle.com/java/java2-screencasts.html?bcid=5582439790001&playerType=single-social&size=events)
 and [paid support](https://blogs.oracle.com/java-platform-group/oracle-jdk-release-for-java-11-and-later).
 
   - [Starting](#starting)
@@ -27,6 +27,7 @@ and [paid support](https://blogs.oracle.com/java-platform-group/oracle-jdk-relea
     - [Installing](#installing)
   - [Using](#using)
     - [Variables](#variables)
+    - [Conditions](#conditions)
     - [Examples](#examples)
   - [Misc](#misc)
     - [Licence](#licence)
@@ -35,12 +36,14 @@ and [paid support](https://blogs.oracle.com/java-platform-group/oracle-jdk-relea
 
 ## Starting
 
+This section is about initial settings to get the role working.
+
 ### Requirements
 
 This role depends on no other role.
 
 This role uses the distribution native package manager and configured
-repositories. 
+repositories.
 
 This role works for distributions there's a build for (see, for example,
 https://wiki.openjdk.java.net/display/Build/Supported+Build+Platforms for
@@ -105,13 +108,15 @@ Create or add to your roles dependency file these lines:
 
 Using that file, install the role in your controler host:
 ```sh
-# roles is the roles folder path
-# specs is the requirements file created previously
+# $roles is the roles folder path, if you are not using default
+# $specs is the requirements file created previously
 # last option force overriding, usefull to ensure version change
-ansible-galaxy install -p roles -r specs -f
+ansible-galaxy install -p $roles -r $specs -f
 ```
 
 ## Using
+
+This section is about integration of the role in your playbooks.
 
 ### Variables
 
@@ -137,12 +142,11 @@ It's a boolean (`no`/`false` or `yes`/`true`) use with some
 packages managers to disable signatures/certificates check. That may be
 usefull to disable such check in some rare cases.
 
-
 #### `ojdk_repository`
 
 This later is used by few packages managers, to set an additionnal
 repository. This string format (URL or a path) and meaning is OS dependant
-then.   
+then.
 
 | distribution | mandatory | used for |
 | ------------ | --------- | -------- |
@@ -160,6 +164,14 @@ Note that for some distributions, like CentOS and Ubuntu, it may be useful to
 add the repository (either manually or a previous task) before calling this
 role. This parameter does very basic setting.
 
+### Conditions
+
+As it adds or removes package from the system, escalation privileges are used
+and you have to call the role accordingly.
+
+This role also use OS family and Distribution (name and major version) facts.
+So, either allow facts gathering or provide them in a way or another.
+
 ### Examples
 
 Now, you're ready to use it in your playbooks.   
@@ -170,6 +182,7 @@ To install (default state) JDK12 on my servlets group:
 ```yaml
 - hosts: servlets
   become: yes
+  gather_facts: yes
   roles:
     - { role: openjdk, ojdk_version: 12 }
 ```
@@ -178,6 +191,7 @@ To remove JDK5 (example purpose, as this doesn't exist) on dummy host:
 ```yaml
 - hosts: dummy
   become: yes
+  gather_facts: yes
   roles:
     - { role: openjdk, ojdk_version: 5, ojdk_state: absent }
 ```
@@ -185,12 +199,12 @@ To remove JDK5 (example purpose, as this doesn't exist) on dummy host:
 ```yaml
 - hosts: dummy
   become: yes
+  gather_facts: yes
   roles:
     - role: openjdk
       ojdk_version: 5
       ojdk_state: absent
 ```
-
 
 OK, now, if your control master's inventory is like:
 ```ini
@@ -230,7 +244,6 @@ Then your playbook simply become:
     - openjdk
 ```
 
-
 ## Misc
 
 [![Build Status](https://travis-ci.org/gilcot/ansible-ojdk.svg?branch=master)](https://travis-ci.org/gilcot/ansible-ojdk)
@@ -239,11 +252,12 @@ Then your playbook simply become:
 
 This role is copyleft under
 [GNU GPLv3](https://www.gnu.org/licenses/quick-guide-gplv3.html)
-(in [LICENSE](LICENSE) file)
+(see [LICENSE](LICENSE.txt) file)
 
 #### Authors
 
-@github/gilcot is a stanch defender of Free Software and only swears by Ansible system for deployments.
+[gilcot](https://github/gilcot) is a stanch defender of Free Software and
+only swears by Ansible system for deployments.
 
 #### Contribution
 
@@ -252,8 +266,8 @@ This role is copyleft under
   - Request code merge to the code
   - Thank the author(s) with:
     - a [beer](https://beerpay.io/gilcot/ansible-ojdk),
-    - a [coffee](buymeacoff.ee/4N0VtGXIj), 
-    - a [ko-fi](Ko-fi.com/gilcot),
+    - a [coffee](https://www.buymeacoff.ee/4N0VtGXIj), 
+    - a [ko-fi](https://ko-fi.com/gilcot),
     - a [penny](https://liberapay.com/gilcot/donate),
     - etc.
 

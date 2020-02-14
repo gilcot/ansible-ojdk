@@ -1,3 +1,8 @@
 ---
 - name: "{{ ansible_distribution }} {{ ansible_distribution_major_version }} deploy"
-  include: "{{ ansible_os_family | lower }}.yml"
+  include: "{{ item }}"
+  with_first_found:
+    # e.g: AIX Alpine Altlinux Archlinux Darwin Debian FreeBSD Gentoo HP-UX Mandrake RedHat SGML Slackware Solaris Suse Windows
+    - "{{ ansible_os_family | lower }}.yml"
+    # e.g: Alpine Altlinux Amazon Archlinux ClearLinux Coreos CentOS Debian Fedora Gentoo Mandriva NA OpenWrt OracleLinux RedHat Slackware SMGL SUSE Ubuntu VMwareESX
+    - "{{ ansible_distribution | lower }}.yml"
